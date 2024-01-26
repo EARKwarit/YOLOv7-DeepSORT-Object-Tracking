@@ -1,7 +1,7 @@
 import argparse
 import time
 from pathlib import Path
-
+import csv
 import cv2
 import torch
 import torch.backends.cudnn as cudnn
@@ -126,7 +126,7 @@ def draw_boxes(img, bbox, names,object_id, identities=None, offset=(0, 0)):
         y2 += offset[1]
 
         # code to find center of bottom edge
-        center = (int((x2+x1)/ 2), int((y2+y2)/2))
+        center = (int((x2+x1)/ 2), int((y2+y1)/2))
 
         # get ID of object
         id = int(identities[i]) if identities is not None else 0
@@ -143,6 +143,14 @@ def draw_boxes(img, bbox, names,object_id, identities=None, offset=(0, 0)):
         # add center to buffer
         data_deque[id].appendleft(center)
         UI_box(box, img, label=label, color=color, line_thickness=2)
+        txt_str = ""
+        txt_str += "%i %i %f %f %f %f" % (id, int(object_id[i]), int(box[0])/img.shape[1], int(box[1])/img.shape[0] , int(box[2])/img.shape[1], int(box[3])/img.shape[0])
+        #txt_str += "\n"
+        #print(txt_str)
+        with open('output.csv', 'a', newline='') as csvfile:
+            csv_writer = csv.writer(csvfile, delimiter=' ')
+            csv_writer.writerow(txt_str.split())
+        
         # draw trail
         for i in range(1, len(data_deque[id])):
             # check if on buffer value is none
@@ -152,6 +160,7 @@ def draw_boxes(img, bbox, names,object_id, identities=None, offset=(0, 0)):
             thickness = int(np.sqrt(opt.trailslen / float(i + i)) * 1.5)
             # draw trails
             cv2.line(img, data_deque[id][i - 1], data_deque[id][i], color, thickness)
+        
     return img
 def load_classes(path):
     # Loads *.names file at 'path'
