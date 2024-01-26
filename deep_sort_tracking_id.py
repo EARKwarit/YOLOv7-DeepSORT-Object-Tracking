@@ -145,11 +145,12 @@ def draw_boxes(img, bbox, names,object_id, identities=None, offset=(0, 0)):
         UI_box(box, img, label=label, color=color, line_thickness=2)
         txt_str = ""
         txt_str += "%i %i %f %f %f %f" % (id, int(object_id[i]), int(box[0])/img.shape[1], int(box[1])/img.shape[0] , int(box[2])/img.shape[1], int(box[3])/img.shape[0])
+        csv_row = [id, int(object_id), int(box[0])/img.shape[1], int(box[1])/img.shape[0], int(box[2])/img.shape[1], int(box[3])/img.shape[0]]
         #txt_str += "\n"
         #print(txt_str)
         with open('output.csv', 'a', newline='') as csvfile:
             csv_writer = csv.writer(csvfile, delimiter=' ')
-            csv_writer.writerow(txt_str.split())
+            csv_writer.writerow(csv_row)
         
         # draw trail
         for i in range(1, len(data_deque[id])):
