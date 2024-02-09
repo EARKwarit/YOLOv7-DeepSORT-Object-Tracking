@@ -23,7 +23,7 @@ import numpy as np
 palette = (2 ** 11 - 1, 2 ** 15 - 1, 2 ** 20 - 1)
 data_deque = {}
 str_txt = ''
-
+fr = 0
 ##########################################################################################
 def xyxy_to_xywh(*xyxy):
     """" Calculates the relative bounding box from absolute pixel values. """
@@ -143,7 +143,7 @@ def draw_boxes(img, bbox, names,object_id, identities=None, offset=(0, 0)):
         label = '{}{:d}'.format("", id) + ":"+ '%s' % (obj_name)
         elements = [id,int(object_id[i]),x1,x2,y1,y2]
         #print('\n')
-        str_txt += "%i %i %f %f %f %f" % (id, int(object_id[i]), x1, x2 , y1, y2)
+        str_txt += "%i %i %i %f %f %f %f" % (fr,id, int(object_id[i]), x1, x2 , y1, y2)
         str_txt += '\n'
         #print(id,int(object_id[i]),x1,x2,y1,y2)
 
@@ -297,6 +297,7 @@ def detect(save_img=False):
                 
                 outputs = deepsort.update(xywhs, confss, oids, im0)
                 if len(outputs) > 0:
+                    fr += 1
                     bbox_xyxy = outputs[:, :4]
                     identities = outputs[:, -2]
                     object_id = outputs[:, -1]
